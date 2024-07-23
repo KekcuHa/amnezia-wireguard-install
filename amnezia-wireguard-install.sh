@@ -242,7 +242,17 @@ H4=${H4}" >/etc/amnezia/amneziawg/params
 	echo "[Interface]
 Address = ${SERVER_AWG_IPV4}/24,${SERVER_AWG_IPV6}/64
 ListenPort = ${SERVER_PORT}
-PrivateKey = ${SERVER_PRIV_KEY}" >"/etc/amnezia/amneziawg/${SERVER_AWG_NIC}.conf"
+PrivateKey = ${SERVER_PRIV_KEY}
+Jc = ${Jc}
+Jmin = ${Jmin}
+Jmax = ${JMax}
+S1 = ${S1}
+S2 = ${S2}
+H1 = ${H1}
+H2 = ${H2}
+H3 = ${H3}
+H4 = ${H4}
+" >"/etc/amnezia/amneziawg/${SERVER_AWG_NIC}.conf"
 
 	if pgrep firewalld; then
 		FIREWALLD_IPV4_ADDRESS=$(echo "${SERVER_AWG_IPV4}" | cut -d"." -f1-3)".0"
