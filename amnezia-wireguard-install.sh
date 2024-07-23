@@ -196,18 +196,18 @@ function installWireGuard() {
 
 	SERVER_PRIV_KEY=$(awg genkey)
 	SERVER_PUB_KEY=$(echo "${SERVER_PRIV_KEY}" | awg pubkey)
-	jc=$(rand 3-10)
-	jmin=$(rand 35-65)
-	jmax=$(rand 960-1280)
-	S1=$(rand 15-1280)
-	S2=$(rand 15-1280)
+	jc=$(shuf -i3-10 -n1)
+	jmin=$(shuf -i35-65 -n1)
+	jmax=$(shuf -i960-1280 -n1)
+	S1=$(shuf -i15-1280 -n1)
+	S2=$(shuf -i15-1280 -n1)
 	while [ "$(( $S1 + 56 ))" == "$S2" ] ; do
-		S2=$(rand 15-1280)
+		S2=$(shuf -i15-1280 -n1)
 	done
-	H1=$(rand 5-2147483647)
-	H2=$(rand 5-2147483647)
-	H3=$(rand 5-2147483647)
-	H4=$(rand 5-2147483647)
+	H1=$(shuf -i5-2147483647 -n1)
+	H2=$(shuf -i5-2147483647 -n1)
+	H3=$(shuf -i5-2147483647 -n1)
+	H4=$(shuf -i5-2147483647 -n1)
 
 	# Save Aminezia WireGuard settings
 	echo "SERVER_PUB_IP=${SERVER_PUB_IP}
