@@ -195,7 +195,7 @@ function installWireGuard() {
 	chmod 600 -R /etc/amnezia/amneziawg/
 
 	SERVER_PRIV_KEY=$(awg genkey)
-	SERVER_PUB_KEY=$(echo "${SERVER_PRIV_KEY}" | wg pubkey)
+	SERVER_PUB_KEY=$(echo "${SERVER_PRIV_KEY}" | awg pubkey)
 	jc=$(rand 3-10)
 	jmin=$(rand 35-65)
 	jmax=$(rand 960-1280)
@@ -361,7 +361,7 @@ function newClient() {
 
 	# Generate key pair for the client
 	CLIENT_PRIV_KEY=$(awg genkey)
-	CLIENT_PUB_KEY=$(echo "${CLIENT_PRIV_KEY}" | wg pubkey)
+	CLIENT_PUB_KEY=$(echo "${CLIENT_PRIV_KEY}" | awg pubkey)
 	CLIENT_PRE_SHARED_KEY=$(awg genpsk)
 
 	HOME_DIR=$(getHomeDirForClient "${CLIENT_NAME}")
@@ -394,7 +394,7 @@ PublicKey = ${CLIENT_PUB_KEY}
 PresharedKey = ${CLIENT_PRE_SHARED_KEY}
 AllowedIPs = ${CLIENT_AWG_IPV4}/32,${CLIENT_AWG_IPV6}/128" >>"/etc/amnezia/amneziawg/${SERVER_AWG_NIC}.conf"
 
-	wg syncconf "${SERVER_AWG_NIC}" <(awg-quick strip "${SERVER_AWG_NIC}")
+	awg syncconf "${SERVER_AWG_NIC}" <(awg-quick strip "${SERVER_AWG_NIC}")
 
 	# Generate QR code if qrencode is installed
 	if command -v qrencode &>/dev/null; then
