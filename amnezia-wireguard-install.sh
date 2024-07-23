@@ -48,20 +48,21 @@ function checkOS() {
 			exit 1
 		fi
 	elif [[ ${OS} == "fedora" ]]; then
-		if [[ ${VERSION_ID} -lt 32 ]]; then
 			echo "Your version of Fedora (${VERSION_ID}) is not supported. Please use Fedora 32 or later"
 			exit 1
 		fi
 	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
-		if [[ ${VERSION_ID} == 7* ]]; then
 			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
 			exit 1
 		fi
 	elif [[ -e /etc/oracle-release ]]; then
-		source /etc/os-release
-		OS=oracle
+			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
+			exit 1
+		fi
 	elif [[ -e /etc/arch-release ]]; then
-		OS=arch
+			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
+			exit 1
+		fi
 	else
 		echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS, AlmaLinux, Oracle or Arch Linux system"
 		exit 1
@@ -190,15 +191,6 @@ function installWireGuard() {
 		echo "deb-src https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
 		apt-get update
 		apt-get install -y amneziawg iptables resolvconf qrencode
-
-	elif [[ ${OS} == 'fedora' ]]; then
-
-	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
-
-	elif [[ ${OS} == 'oracle' ]]; then
-
-	elif [[ ${OS} == 'arch' ]]; then
-
 	fi
 
 	# Make sure the directory exists (this does not seem the be the case on fedora)
