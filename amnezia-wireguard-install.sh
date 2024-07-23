@@ -122,7 +122,7 @@ function installQuestions() {
 	done
 
 	until [[ ${SERVER_AWG_NIC} =~ ^[a-zA-Z0-9_]+$ && ${#SERVER_AWG_NIC} -lt 16 ]]; do
-		read -rp "Amnezia WireGuard interface name: " -e -i wg0 SERVER_AWG_NIC
+		read -rp "Amnezia WireGuard interface name: " -e -i awg0 SERVER_AWG_NIC
 	done
 
 	until [[ ${SERVER_AWG_IPV4} =~ ^([0-9]{1,3}\.){3} ]]; do
@@ -181,7 +181,7 @@ function installWireGuard() {
 			apt-get update
 		fi
 		apt-get update
-		apt install -y software-properties-common python3-launchpadlib gnupg2 linux-headers-$(uname -r)
+		apt-get install -y software-properties-common python3-launchpadlib gnupg2 linux-headers-$(uname -r)
 		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 57290828
 		echo "deb https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
 		echo "deb-src https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
@@ -459,21 +459,21 @@ function uninstallWg() {
 	if [[ $REMOVE == 'y' ]]; then
 		checkOS
 
-		systemctl stop "wg-quick@${SERVER_AWG_NIC}"
-		systemctl disable "wg-quick@${SERVER_AWG_NIC}"
+		systemctl stop "awg-quick@${SERVER_AWG_NIC}"
+		systemctl disable "awg-quick@${SERVER_AWG_NIC}"
 
 		if [[ ${OS} == 'ubuntu' ]]; then
-			apt-get remove -y wireguard wireguard-tools qrencode
+			apt-get remove -y amneziawg-tools amneziawg-dkms amneziawg qrencode
 		elif [[ ${OS} == 'debian' ]]; then
-			apt-get remove -y wireguard wireguard-tools qrencode
+			apt-get remove -y amneziawg-tools amneziawg-dkms amneziawg qrencode
 		elif [[ ${OS} == 'fedora' ]]; then
-			dnf remove -y --noautoremove wireguard-tools qrencode
+			dnf remove -y --noautoremove amneziawg-tools amneziawg-dkms amneziawg qrencode
 			if [[ ${VERSION_ID} -lt 32 ]]; then
-				dnf remove -y --noautoremove wireguard-dkms
+				dnf remove -y --noautoremove amneziawg-dkms
 				dnf copr disable -y jdoss/wireguard
 			fi
 		elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
-			yum remove -y --noautoremove wireguard-tools
+			yum remove -y --noautoremove amneziawg-tools
 			if [[ ${VERSION_ID} == 8* ]]; then
 				yum remove --noautoremove kmod-wireguard qrencode
 			fi
@@ -490,7 +490,7 @@ function uninstallWg() {
 		sysctl --system
 
 		# Check if Aminezia WireGuard is running
-		systemctl is-active --quiet "wg-quick@${SERVER_AWG_NIC}"
+		systemctl is-active --quiet "awg-quick@${SERVER_AWG_NIC}"
 		WG_RUNNING=$?
 
 		if [[ ${WG_RUNNING} -eq 0 ]]; then
