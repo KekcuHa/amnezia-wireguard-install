@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Secure Aminezia WireGuard server installer
+# Secure AmneziaWG server installer
 
 # Basesd on https://github.com/angristan/wireguard-install
 
@@ -24,7 +24,7 @@ function checkVirt() {
 
 	if [ "$(systemd-detect-virt)" == "lxc" ]; then
 		echo "LXC is not supported (yet)."
-		echo "Amnezia WireGuard can technically run in an LXC container,"
+		echo "AmneziaWG can technically run in an LXC container,"
 		echo "but the kernel module has to be installed on the host,"
 		echo "the container has to be run with some specific parameters"
 		echo "and only the tools need to be installed in the container."
@@ -100,7 +100,7 @@ function initialCheck() {
 }
 
 function installQuestions() {
-	echo "Welcome to the Amnezia Aminezia WireGuard installer!"
+	echo "Welcome to the AmneziaWG installer!"
 	echo "The git repository is available at: https://github.com/angristan/wireguard-install"
 	echo ""
 	echo "I need to ask you a few questions before starting the setup."
@@ -122,21 +122,21 @@ function installQuestions() {
 	done
 
 	until [[ ${SERVER_AWG_NIC} =~ ^[a-zA-Z0-9_]+$ && ${#SERVER_AWG_NIC} -lt 16 ]]; do
-		read -rp "Amnezia WireGuard interface name: " -e -i awg0 SERVER_AWG_NIC
+		read -rp "AmneziaWG interface name: " -e -i awg0 SERVER_AWG_NIC
 	done
 
 	until [[ ${SERVER_AWG_IPV4} =~ ^([0-9]{1,3}\.){3} ]]; do
-		read -rp "Server Aminezia WireGuard IPv4: " -e -i 10.66.66.1 SERVER_AWG_IPV4
+		read -rp "Server AmneziaWG IPv4: " -e -i 10.66.66.1 SERVER_AWG_IPV4
 	done
 
 	until [[ ${SERVER_AWG_IPV6} =~ ^([a-f0-9]{1,4}:){3,4}: ]]; do
-		read -rp "Server Aminezia WireGuard IPv6: " -e -i fd42:42:42::1 SERVER_AWG_IPV6
+		read -rp "Server AmneziaWG IPv6: " -e -i fd42:42:42::1 SERVER_AWG_IPV6
 	done
 
 	# Generate random number within private ports range
 	RANDOM_PORT=$(shuf -i49152-65535 -n1)
 	until [[ ${SERVER_PORT} =~ ^[0-9]+$ ]] && [ "${SERVER_PORT}" -ge 1 ] && [ "${SERVER_PORT}" -le 65535 ]; do
-		read -rp "Server Aminezia WireGuard port [1-65535]: " -e -i "${RANDOM_PORT}" SERVER_PORT
+		read -rp "Server AmneziaWG port [1-65535]: " -e -i "${RANDOM_PORT}" SERVER_PORT
 	done
 
 	# Adguard DNS by default
@@ -151,7 +151,7 @@ function installQuestions() {
 	done
 
 	until [[ ${ALLOWED_IPS} =~ ^.+$ ]]; do
-		echo -e "\nAmnezia WireGuard uses a parameter called AllowedIPs to determine what is routed over the VPN."
+		echo -e "\nAmneziaWG uses a parameter called AllowedIPs to determine what is routed over the VPN."
 		read -rp "Allowed IPs list for generated clients (leave default to route everything): " -e -i '0.0.0.0/0,::/0' ALLOWED_IPS
 		if [[ ${ALLOWED_IPS} == "" ]]; then
 			ALLOWED_IPS="0.0.0.0/0,::/0"
@@ -159,7 +159,7 @@ function installQuestions() {
 	done
 
 	echo ""
-	echo "Okay, that was all I needed. We are ready to setup your Aminezia WireGuard server now."
+	echo "Okay, that was all I needed. We are ready to setup your AmneziaWG server now."
 	echo "You will be able to generate a client at the end of the installation."
 	read -n1 -r -p "Press any key to continue..."
 }
@@ -168,7 +168,7 @@ function installWireGuard() {
 	# Run setup questions first
 	installQuestions
 
-	# Install Aminezia WireGuard tools and module
+	# Install AmneziaWG tools and module
 	if [[ ${OS} == 'ubuntu' ]] || [[ ${OS} == 'debian' && ${VERSION_ID} -gt 10 ]]; then
 		# Enable deb-src repos
 		cd /etc/apt/ && cp sources.list sources.list.backup && sed "s/# deb-src/deb-src/" sources.list.backup > sources.list
@@ -209,7 +209,7 @@ function installWireGuard() {
 	H3=$(shuf -i5-2147483647 -n1)
 	H4=$(shuf -i5-2147483647 -n1)
 
-	# Save Aminezia WireGuard settings
+	# Save AmneziaWG settings
 	echo "SERVER_PUB_IP=${SERVER_PUB_IP}
 SERVER_PUB_NIC=${SERVER_PUB_NIC}
 SERVER_AWG_NIC=${SERVER_AWG_NIC}
@@ -279,18 +279,18 @@ net.ipv6.conf.all.forwarding = 1" >/etc/sysctl.d/awg.conf
 	newClient
 	echo -e "${GREEN}If you want to add more clients, you simply need to run this script another time!${NC}"
 
-	# Check if Aminezia WireGuard is running
+	# Check if AmneziaWG is running
 	systemctl is-active --quiet "awg-quick@${SERVER_AWG_NIC}"
 	WG_RUNNING=$?
 
-	# Aminezia WireGuard might not work if we updated the kernel. Tell the user to reboot
+	# AmneziaWG might not work if we updated the kernel. Tell the user to reboot
 	if [[ ${WG_RUNNING} -ne 0 ]]; then
-		echo -e "\n${RED}WARNING: Aminezia WireGuard does not seem to be running.${NC}"
-		echo -e "${ORANGE}You can check if Aminezia WireGuard is running with: systemctl status awg-quick@${SERVER_AWG_NIC}${NC}"
+		echo -e "\n${RED}WARNING: AmneziaWG does not seem to be running.${NC}"
+		echo -e "${ORANGE}You can check if AmneziaWG is running with: systemctl status awg-quick@${SERVER_AWG_NIC}${NC}"
 		echo -e "${ORANGE}If you get something like \"Cannot find device ${SERVER_AWG_NIC}\", please reboot!${NC}"
-	else # Aminezia WireGuard is running
+	else # AmneziaWG is running
 		echo -e "\n${GREEN}WireGuard is running.${NC}"
-		echo -e "${GREEN}You can check the status of Aminezia WireGuard with: systemctl status awg-quick@${SERVER_AWG_NIC}\n\n${NC}"
+		echo -e "${GREEN}You can check the status of AmneziaWG with: systemctl status awg-quick@${SERVER_AWG_NIC}\n\n${NC}"
 		echo -e "${ORANGE}If you don't have internet connectivity from your client, try to reboot the server.${NC}"
 	fi
 }
@@ -335,7 +335,7 @@ function newClient() {
 
 	BASE_IP=$(echo "$SERVER_AWG_IPV4" | awk -F '.' '{ print $1"."$2"."$3 }')
 	until [[ ${IPV4_EXISTS} == '0' ]]; do
-		read -rp "Client Aminezia WireGuard IPv4: ${BASE_IP}." -e -i "${DOT_IP}" DOT_IP
+		read -rp "Client AmneziaWG IPv4: ${BASE_IP}." -e -i "${DOT_IP}" DOT_IP
 		CLIENT_AWG_IPV4="${BASE_IP}.${DOT_IP}"
 		IPV4_EXISTS=$(grep -c "$CLIENT_AWG_IPV4/32" "/etc/amnezia/amneziawg/${SERVER_AWG_NIC}.conf")
 
@@ -348,7 +348,7 @@ function newClient() {
 
 	BASE_IP=$(echo "$SERVER_AWG_IPV6" | awk -F '::' '{ print $1 }')
 	until [[ ${IPV6_EXISTS} == '0' ]]; do
-		read -rp "Client Aminezia WireGuard IPv6: ${BASE_IP}::" -e -i "${DOT_IP}" DOT_IP
+		read -rp "Client AmneziaWG IPv6: ${BASE_IP}::" -e -i "${DOT_IP}" DOT_IP
 		CLIENT_AWG_IPV6="${BASE_IP}::${DOT_IP}"
 		IPV6_EXISTS=$(grep -c "${CLIENT_AWG_IPV6}/128" "/etc/amnezia/amneziawg/${SERVER_AWG_NIC}.conf")
 
@@ -452,9 +452,9 @@ function revokeClient() {
 
 function uninstallWg() {
 	echo ""
-	echo -e "\n${RED}WARNING: This will uninstall Aminezia WireGuard and remove all the configuration files!${NC}"
+	echo -e "\n${RED}WARNING: This will uninstall AmneziaWG and remove all the configuration files!${NC}"
 	echo -e "${ORANGE}Please backup the /etc/amnezia/amneziawg directory if you want to keep your configuration files.\n${NC}"
-	read -rp "Do you really want to remove WireGuard? [y/n]: " -e REMOVE
+	read -rp "Do you really want to remove AmneziaWG? [y/n]: " -e REMOVE
 	REMOVE=${REMOVE:-n}
 	if [[ $REMOVE == 'y' ]]; then
 		checkOS
@@ -489,15 +489,15 @@ function uninstallWg() {
 		# Reload sysctl
 		sysctl --system
 
-		# Check if Aminezia WireGuard is running
+		# Check if AmneziaWG is running
 		systemctl is-active --quiet "awg-quick@${SERVER_AWG_NIC}"
 		WG_RUNNING=$?
 
 		if [[ ${WG_RUNNING} -eq 0 ]]; then
-			echo "Amnezia WireGuard failed to uninstall properly."
+			echo "AmneziaWG failed to uninstall properly."
 			exit 1
 		else
-			echo "Amnezia WireGuard uninstalled successfully."
+			echo "AmneziaWG uninstalled successfully."
 			exit 0
 		fi
 	else
@@ -510,7 +510,7 @@ function manageMenu() {
 	echo "Welcome to WireGuard-install!"
 	echo "The git repository is available at: https://github.com/angristan/wireguard-install"
 	echo ""
-	echo "It looks like Aminezia WireGuard is already installed."
+	echo "It looks like AmneziaWG is already installed."
 	echo ""
 	echo "What do you want to do?"
 	echo "   1) Add a new user"
@@ -543,7 +543,7 @@ function manageMenu() {
 # Check for root, virt, OS...
 initialCheck
 
-# Check if Aminezia WireGuard is already installed and load params
+# Check if AmneziaWG is already installed and load params
 if [[ -e /etc/amnezia/amneziawg/params ]]; then
 	source /etc/amnezia/amneziawg/params
 	manageMenu
