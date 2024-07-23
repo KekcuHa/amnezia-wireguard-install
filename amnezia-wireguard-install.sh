@@ -183,9 +183,14 @@ function installWireGuard() {
 			echo "deb http://deb.debian.org/debian buster-backports main" >/etc/apt/sources.list.d/backports.list
 			apt-get update
 		fi
-		apt update
-		apt-get install -y iptables resolvconf qrencode
-		apt-get install -y -t buster-backports wireguard
+		apt-get update
+		apt install -y software-properties-common python3-launchpadlib gnupg2 linux-headers-$(uname -r)
+		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 57290828
+		echo "deb https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
+		echo "deb-src https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
+		apt-get update
+		apt-get install -y amneziawg iptables resolvconf qrencode
+
 	elif [[ ${OS} == 'fedora' ]]; then
 
 	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
