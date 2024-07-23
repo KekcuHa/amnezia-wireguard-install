@@ -48,21 +48,17 @@ function checkOS() {
 			exit 1
 		fi
 	elif [[ ${OS} == "fedora" ]]; then
-			echo "Your version of Fedora (${VERSION_ID}) is not supported. Please use Fedora 32 or later"
+			echo "Fedora (${VERSION_ID}) is not supported (yet?)."
 			exit 1
-		fi
 	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
-			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
+			echo "CentOS (${VERSION_ID}) is not supported (yet?)."
 			exit 1
-		fi
 	elif [[ -e /etc/oracle-release ]]; then
-			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
+			echo "CentOS (${VERSION_ID}) is not supported (yet?)."
 			exit 1
-		fi
 	elif [[ -e /etc/arch-release ]]; then
-			echo "Your version of CentOS (${VERSION_ID}) is not supported. Please use CentOS 8 or later"
+			echo "ArchLinux (${VERSION_ID}) is not supported (yet?)."
 			exit 1
-		fi
 	else
 		echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS, AlmaLinux, Oracle or Arch Linux system"
 		exit 1
