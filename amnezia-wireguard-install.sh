@@ -196,9 +196,9 @@ function installWireGuard() {
 
 	SERVER_PRIV_KEY=$(awg genkey)
 	SERVER_PUB_KEY=$(echo "${SERVER_PRIV_KEY}" | awg pubkey)
-	jc=$(shuf -i3-10 -n1)
-	jmin=$(shuf -i35-65 -n1)
-	jmax=$(shuf -i960-1280 -n1)
+	Jc=$(shuf -i3-10 -n1)
+	Jmin=$(shuf -i35-65 -n1)
+	Jmax=$(shuf -i960-1280 -n1)
 	S1=$(shuf -i15-1280 -n1)
 	S2=$(shuf -i15-1280 -n1)
 	while [ "$(( $S1 + 56 ))" == "$S2" ] ; do
