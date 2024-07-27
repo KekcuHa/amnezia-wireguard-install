@@ -169,24 +169,41 @@ function installWireGuard() {
 	installQuestions
 
 	# Install AmneziaWG tools and module
-	if [[ ${OS} == 'ubuntu' ]] || [[ ${OS} == 'debian' && ${VERSION_ID} -gt 10 ]]; then
-		# Enable deb-src repos
-		cd /etc/apt/ && cp sources.list sources.list.backup && sed "s/# deb-src/deb-src/" sources.list.backup > sources.list
-		apt-get update -y
-		add-apt-repository -y ppa:amnezia/ppa
-		apt-get install -y amneziawg iptables resolvconf qrencode
-	elif [[ ${OS} == 'debian' ]]; then
-		if ! grep -rqs "^deb .* buster-backports" /etc/apt/; then
-			echo "deb http://deb.debian.org/debian buster-backports main" >/etc/apt/sources.list.d/backports.list
-			apt-get update
+	if [[ ${OS} == 'ubuntu' ]]; then
+		if [[ -e /etc/apt/sources.list.d/ubuntu.sources ]]; then
+			if ! grep -q "deb-src" /etc/apt/sources.list.d/ubuntu.sources; then
+				cp /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/amneziawg.sources
+				sed -i 's/deb/deb-src/' /etc/apt/sources.list.d/amneziawg.sources
+			fi
+		else
+			if ! grep -q "^deb-src" /etc/apt/sources.list; then
+				cp /etc/apt/sources.list /etc/apt/sources.list.d/amneziawg.sources.list
+				sed -i 's/^deb/deb-src/' /etc/apt/sources.list.d/amneziawg.sources.list
+			fi
 		fi
-		apt-get update
-		apt-get install -y software-properties-common python3-launchpadlib gnupg2 linux-headers-$(uname -r)
+		apt install -y software-properties-common
+		add-apt-repository -y ppa:amnezia/ppa
+		apt install -y amneziawg amneziawg-tools qrencode
+	elif [[ ${OS} == 'debian' ]]; then
+		if ! grep -q "^deb-src" /etc/apt/sources.list; then
+			cp /etc/apt/sources.list /etc/apt/sources.list.d/amneziawg.sources.list
+			sed -i 's/^deb/deb-src/' /etc/apt/sources.list.d/amneziawg.sources.list
+		fi
 		apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 57290828
-		echo "deb https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
-		echo "deb-src https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
-		apt-get update
-		apt-get install -y amneziawg iptables resolvconf qrencode
+		echo "deb https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" >>/etc/apt/sources.list.d/amneziawg.sources.list
+		echo "deb-src https://ppa.launchpadcontent.net/amnezia/ppa/ubuntu focal main" >>/etc/apt/sources.list.d/amneziawg.sources.list
+		apt update
+		apt install -y amneziawg amneziawg-tools qrencode iptables
+	elif [[ ${OS} == 'fedora' ]]; then
+		dnf config-manager --set-enabled crb
+		dnf install -y epel-release
+		dnf copr enable -y amneziavpn/amneziawg
+		dnf install -y amneziawg-dkms amneziawg-tools qrencode iptables
+	elif [[ ${OS} == 'centos' ]] || [[ ${OS} == 'almalinux' ]] || [[ ${OS} == 'rocky' ]]; then
+		dnf config-manager --set-enabled crb
+		dnf install -y epel-release
+		dnf copr enable -y amneziavpn/amneziawg
+		dnf install -y amneziawg-dkms amneziawg-tools qrencode iptables
 	fi
 
 	# Make sure the directory exists (this does not seem the be the case on fedora)
